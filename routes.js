@@ -22,6 +22,40 @@ router.post("/", (req, res, next) => {
     }
 });
 
+router.get("/:name", (req, res, next) => {
+    try {
+        let item = items.find(item => item.name === req.params.name);
+        if (!item) throw new ExpressError("Item not found", 404);
+        return res.json({ item });
+    } catch (e) {
+        return next(e);
+    }
+});
+
+router.patch("/:name", (req, res, next) => {
+    try {
+        let item = items.find(item => item.name === req.params.name);
+        if (!item) throw new ExpressError("Item not found", 404);
+        if (!req.body.name || !req.body.price) throw new ExpressError("Name and price are required", 400);
+        item.name = req.body.name;
+        item.price = req.body.price;
+        return res.json({ updated: item });
+    } catch (e) {
+        return next(e);
+    }
+});
+
+router.delete("/:name", (req, res, next) => {
+    try {
+        const item = items.findIndex(item => item.name === req.params.name);
+        if (item === -1) throw new ExpressError("Item not found", 404);
+        items.splice(item, 1);
+        return res.json({ message: "Deleted" });    
+    } catch (error) {
+        return next(error);
+    }
+});
+
 // Get an item by name
 
 module.exports = router;
